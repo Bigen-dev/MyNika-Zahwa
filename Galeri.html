@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 40px 20px;
+            background-color: #f3f0f7;
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(68, 255, 140, 0.682) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(247, 251, 45, 0.5) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgb(234, 243, 172) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgb(255, 88, 247) 0px, transparent 50%);
+        background-attachment: fixed;
+        }
+
+        /* Judul Utama */
+        .main-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.3;
+            letter-spacing: 1px;
+            margin-bottom: 50px;
+            color: #000000;
+            text-transform: uppercase;
+        }
+
+        .image-card {
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 5px solid #000000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            background: white;
+            transition: transform 0.3s ease;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .image-card img { 
+            width: 100%; 
+            display: block; 
+            height: auto; 
+            object-fit: cover;
+        }
+
+        /* Kolom Tengah (Grid Tabel + Total) */
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            flex-shrink: 0;
+        }
+
+        /* Grid Tabel Kotak Angka */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(7, 85px);
+            gap: 12px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #eaeaea;
+        }
+
+        /* Gaya Kotak Week Default (Warna Biru sesuai gambar) */
+        .grid-item {
+            width: 85px;
+            height: 85px;
+            background: #3498db;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .grid-item:hover { 
+            transform: scale(1.05); 
+            background: #2980b9;
+        }
+.gallery-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            /* Mengatur grid otomatis dengan kartu minimal 200px */
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px; /* Jarak antar kartu */
+        }
+
+        /* --- Gaya Image Card (Persegi) --- */
+        .image-card {
+            background-color: white;
+            border-radius: 20px; /* Sudut membulat seperti contoh */
+            padding: 2px; /* Bingkai putih dalam */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); /* Bayangan lembut */
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+            
+            /* Trik CSS untuk memaksa persegi sempurna */
+            position: relative;
+            width: 100%;
+            padding-top: 100%; /* Lebar = Tinggi */
+        }
+
+        /* Kontainer gambar di dalam kartu persegi */
+        .image-card-inner {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            overflow: hidden;
+            border-radius: 15px; /* Lebih kecil dari kartu utama */
+        }
+
+        .image-card-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Gambar full memenuhpersegi tanpa distorsi */
+            transition: filter 0.3s ease;
+        }
+
+        /* --- Efek Hover (Saat Kursor Di Atas Kartu) --- */
+        .image-card:hover {
+            transform: scale(1.05); /* Membesar sedikit */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+        }
+
+        /* Kartu lain sedikit meredup saat satu kartu di-hover */
+        .gallery-container:hover .image-card:not(:hover) {
+            opacity: 0.7;
+        }
+
+        /* --- Gaya Kotak Pratinjau Full (Modal) --- */
+        .modal {
+            display: none; /* Sembunyi secara default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); /* Latar belakang hitam pekat */
+            z-index: 1000; /* Di atas segalanya */
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            
+        }
+
+        /* Modal muncul dengan animasi pudar */
+        .modal.open {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Gambar di dalam Modal */
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border: 5px solid white;
+            border-radius: 20px;
+            box-shadow: 0 10px 50px rgba(255,255,255,0.2);
+            transform: scale(0.7); /* Muncul dari kecil */
+            transition: transform 0.3s ease;
+        }
+
+        .modal.open .modal-content {
+            transform: scale(1); /* Ukuran penuh */
+        }
+
+        /* Tombol Tutup (X) */
+        .close-button {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: white;
+            font-size: 60px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            user-select: none;
+        }
+
+        .close-button:hover {
+            color: #ff6b6b;
+        }
+
+                nav {
+  padding: 2px;
+  text-align: center;
+  font-family:arial;
+  border: #333;
+}
+
+nav a {
+  background-color:aqua ;
+  color: rgb(0, 0, 0);
+  padding: 8px 15px;
+  text-decoration: none;
+  border-radius: 5px;
+  margin: 3px;
+}
+nav a:hover {
+  color: rgb(255, 255, 255);
+}
+
+    </style>
+</head>
+<body>
+       <center> <nav>
+            <a href="home.html">Home</a>
+            <a href="index.html">Detail</a>
+            <a href="Galeri.html">Galeri</a>
+        </nav></center> 
+        <br>
+    <h1 class="main-title">Our Pictures     </h1>
+<div class="gallery-container">
+        
+        <div class="image-card" onclick="openModal('img/1.JPG')">
+            <div class="image-card-inner">
+                <img src="img/1.JPG" alt="Gambar 1">
+            </div>
+        </div>
+
+        <div class="image-card" onclick="openModal('img/2.JPG')">
+            <div class="image-card-inner">
+                <img src="img/2.JPG" alt="Gambar 1">
+             </div>
+        </div>
+
+        <div class="image-card" onclick="openModal('img/3.JPG')">
+            <div class="image-card-inner">
+               <img src="img/3.JPG" alt="Gambar 1">
+            </div>
+        </div>
+
+        <div class="image-card" onclick="openModal('img/4.JPG')">
+            <div class="image-card-inner">
+    <img src="img/4.JPG" alt="Gambar 1">
+            </div>
+        </div>
+
+        <div class="image-card" onclick="openModal('img/5.JPG')">
+            <div class="image-card-inner">
+               <img src="img/5.JPG" alt="Gambar 1">
+            </div>
+        </div>
+
+        <div class="image-card" onclick="openModal('img/6.JPG')">
+            <div class="image-card-inner">
+              <img src="img/6.JPG" alt="Gambar 1">
+            </div>
+        </div>
+        <div class="image-card" onclick="openModal('img/7.JPG')">
+            <div class="image-card-inner">
+              <img src="img/7.JPG" alt="Gambar 1">
+            </div>
+        </div>
+        <div class="image-card" onclick="openModal('img/8.JPG')">
+            <div class="image-card-inner">
+              <img src="img/8.JPG" alt="Gambar 1">
+            </div>
+        </div>
+        <div class="image-card" onclick="openModal('img/9.JPG')">
+            <div class="image-card-inner">
+               <img src="img/9.JPG" alt="Gambar 1">
+            </div>
+        </div>
+        <div class="image-card" onclick="openModal('img/10.jpg')">
+            <div class="image-card-inner">
+             <img src="img/10.jpg" alt="Gambar 1">
+            </div>
+        </div>
+        </div>
+
+    <div id="imageModal" class="modal">
+        <span class="close-button" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="fullImage">
+    </div>
+
+    <script>
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("fullImage");
+
+        // Fungsi untuk membuka modal dan menampilkan gambar full
+        function openModal(imageSrc) {
+            modalImg.src = imageSrc; // Atur sumber gambar full
+            modal.classList.add("open"); // Tampilkan modal
+        }
+
+        // Fungsi untuk menutup modal
+        function closeModal() {
+            modal.classList.remove("open"); // Sembunyikan modal
+        }
+
+        // Menutup modal jika user klik area di luar gambar
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Menutup modal dengan tombol 'Esc' di keyboard
+        document.addEventListener('keydown', function(e) {
+            if (e.key === "Escape" && modal.classList.contains("open")) {
+                closeModal();
+            }
+        });
+    </script>
+
+</body>
+</html>

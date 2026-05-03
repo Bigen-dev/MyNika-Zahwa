@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Home</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 40px 20px;
+            background-color: #f3f0f7;
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(68, 255, 140, 0.682) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(247, 251, 45, 0.5) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgb(234, 243, 172) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgb(255, 88, 247) 0px, transparent 50%);
+        background-attachment: fixed;
+        }
+
+        /* Judul Utama */
+        .main-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.3;
+            letter-spacing: 1px;
+            margin-bottom: 50px;
+            color: #000000;
+            text-transform: uppercase;
+        }
+
+
+        /* Wrapper Konten Utama (3 Kolom Sejajar) */
+        .layout-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items:center;
+
+            gap: 30px;
+            flex-wrap: nowrap;
+            max-width: 1350px;
+            margin: 0 auto;
+        }
+
+        /* Kolom Samping (Kiri & Kanan) untuk Gambar */
+        .side-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 280px;
+            flex-shrink: 0;
+        }
+
+        .image-card {
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 5px solid #000000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            background: white;
+            transition: transform 0.3s ease;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .image-card img { 
+            width: 100%; 
+            display: block; 
+            height: auto; 
+            object-fit: cover;
+        }
+
+        /* Kolom Tengah (Grid Tabel + Total) */
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            flex-shrink: 0;
+        }
+
+        /* Grid Tabel Kotak Angka */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(7, 85px);
+            gap: 12px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #eaeaea;
+        }
+
+        /* Gaya Kotak Week Default (Warna Biru sesuai gambar) */
+        .grid-item {
+            width: 85px;
+            height: 85px;
+            background: #3498db;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .grid-item:hover { 
+            transform: scale(1.05); 
+            background: #2980b9;
+        }
+
+        /* Gaya Kotak ketika sudah diklik (Warna Hijau) */
+        .grid-item.checked {
+            background: #2ecc71;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+            pointer-events: none;
+        }
+
+        .week-label { 
+            font-size: 0.65rem; 
+            text-transform: uppercase; 
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            opacity: 0.9; 
+        }
+
+        .week-number { 
+            font-size: 1.5rem; 
+            font-weight: 800; 
+        }
+
+        /* Kotak Total Tabungan Pas Sesuai Isi */
+        .total-card {
+            background: white;
+            padding: 12px 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border: 1px solid #eaeaea;
+            border-left: 5px solid #2ecc71;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            width: fit-content;
+        }
+
+        .total-label { 
+            font-size: 1rem; 
+            font-weight: 600; 
+            color: #555; 
+        }
+
+        .total-amount { 
+            font-size: 1.4rem; 
+            font-weight: 800; 
+            color: #111; 
+        }
+
+        /* Responsif untuk Layar Tablet dan HP */
+        @media (max-width: 500px) {
+            .layout-wrapper {
+                flex-direction: column;
+                align-items: center;
+                gap: 40px;
+            }
+            .side-content {
+                width: 50px;
+                max-width: 50px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: repeat(4, 75px);
+                gap: 8px;
+                padding: 12px;
+            }
+            .grid-item {
+                width: 75px;
+                height: 75px;
+            }
+            .week-number {
+                font-size: 1.3rem;
+            }
+            .main-title {
+                font-size: 1.8rem;
+            }
+        }
+                nav {
+  padding: 2px;
+  text-align: center;
+  font-family:arial;
+  border: #333;
+}
+
+nav a {
+  background-color:aqua ;
+  color: rgb(0, 0, 0);
+  padding: 8px 15px;
+  text-decoration: none;
+  border-radius: 5px;
+  margin: 3px;
+}
+nav a:hover {
+  color: rgb(255, 255, 255);
+}
+
+    </style>
+</head>
+<body>
+       <center> <nav>
+            <a href="home.html">Home</a>
+            <a href="index.html">Detail</a>
+            <a href="Galeri.html">Galeri</a>
+        </nav></center> 
+        <br>
+    <h1 class="main-title">WELCOME TO<br>ZAHWA AND HASBI'S JOURNEY <br>100K/Week</h1>
+
+    <div class="layout-wrapper">
+        
+        <div class="side-content">
+            <div class="image-card">
+                <img src="img/SAVE_20260503_113020.jpg" alt="Zahwa and Hasbi">
+            </div>
+        </div>
+
+        <div class="center-content">
+            <div class="grid-container">
+                <script>
+                    for (let i = 1; i <= 21; i++) {
+                        document.write(`
+                            <div class="grid-item" onclick="toggleWeek(this)">
+                                <span class="week-label">Week</span>
+                                <span class="week-number">${i}</span>
+                            </div>
+                        `);
+                    }
+                </script>
+            </div>
+
+            <div class="total-card">
+                <span class="total-label">Total Tabungan:</span>
+                <span class="total-amount" id="totalAmount">Rp 0</span>
+            </div>
+        </div>
+
+        <div class="side-content">
+            <div class="image-card">
+                <img src="img/SAVE_20260503_104303.jpg" alt="Journey Goals">
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        let totalTabungan = 0;
+        const totalDisplay = document.getElementById('totalAmount');
+
+        function toggleWeek(element) {
+            if (element.classList.contains('checked')) {
+                element.classList.remove('checked');
+                totalTabungan -= 100000;
+            } else {
+                element.classList.add('checked');
+                totalTabungan += 100000;
+            }
+
+            // Update tampilan total tabungan di layar
+            totalDisplay.innerText = "Rp " + totalTabungan.toLocaleString('id-ID');
+        }
+    </script>
+
+</body>
+</html>
