@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1200, initial-scale=1.0">
-    <title>Welcome Home</title>
+    <title>Zahwa and Hasbi's Journey</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
 
+        /* ==========================================
+           BACKGROUND ABSTRAK MODERN
+           ========================================== */
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #ffffff;
             margin: 0;
             padding: 40px 20px;
-            background-color: #f3f0f7;
+            color: #111;
+            
+             background-color: #f3f0f7;
     background-image: 
         radial-gradient(at 0% 0%, rgba(68, 255, 140, 0.682) 0px, transparent 50%),
         radial-gradient(at 100% 100%, rgba(247, 251, 45, 0.5) 0px, transparent 50%),
@@ -21,7 +25,6 @@
         background-attachment: fixed;
         }
 
-        /* Judul Utama */
         .main-title {
             text-align: center;
             font-size: 2.5rem;
@@ -33,40 +36,34 @@
             text-transform: uppercase;
         }
 
-
-        /* Wrapper Konten Utama (3 Kolom Sejajar) */
+        /* ==========================================
+           LAYOUT SIMETRIS (LURUS HORIZONTAL)
+           ========================================== */
         .layout-wrapper {
             display: flex;
             justify-content: center;
-            align-items:center;
-
+            align-items: center; /* Simetris lurus secara vertikal */
             gap: 30px;
-            flex-wrap: nowrap;
-            max-width: 1350px;
+            width: 1150px; /* Lebar dikunci agar sama di Windows & HP */
             margin: 0 auto;
         }
 
-        /* Kolom Samping (Kiri & Kanan) untuk Gambar */
         .side-content {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 280px;
+            width: 290px;
             flex-shrink: 0;
         }
 
         .image-card {
             width: 100%;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
-            border: 5px solid #000000;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 5px solid #ffffff;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
             background: white;
             transition: transform 0.3s ease;
-        }
-
-        .image-card:hover {
-            transform: translateY(-5px);
         }
 
         .image-card img { 
@@ -76,7 +73,6 @@
             object-fit: cover;
         }
 
-        /* Kolom Tengah (Grid Tabel + Total) */
         .center-content {
             display: flex;
             flex-direction: column;
@@ -94,10 +90,10 @@
             padding: 20px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            border: 1px solid #eaeaea;
+            border: 1px solid rgba(0,0,0,0.03);
         }
 
-        /* Gaya Kotak Week Default (Warna Biru sesuai gambar) */
+        /* Gaya Kotak Week Default (Belum diklik) */
         .grid-item {
             width: 85px;
             height: 85px;
@@ -119,18 +115,20 @@
             background: #2980b9;
         }
 
-        /* Gaya Kotak ketika sudah diklik (Warna Hijau) */
+        /* ==========================================
+           KOTAK TERKUNCI SETELAH DI-CHECK
+           ========================================== */
         .grid-item.checked {
-            background: #2ecc71;
-            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
-            pointer-events: none;
+            background: #2ecc71 !important;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4) !important;
+            pointer-events: none; /* Kunci tombol agar tidak bisa diklik lagi */
+            cursor: default;
         }
 
         .week-label { 
             font-size: 0.65rem; 
             text-transform: uppercase; 
             font-weight: 600;
-            letter-spacing: 0.5px;
             opacity: 0.9; 
         }
 
@@ -139,13 +137,11 @@
             font-weight: 800; 
         }
 
-        /* Kotak Total Tabungan Pas Sesuai Isi */
         .total-card {
             background: white;
             padding: 12px 25px;
             border-radius: 12px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-            border: 1px solid #eaeaea;
             border-left: 5px solid #2ecc71;
             display: flex;
             gap: 10px;
@@ -153,77 +149,30 @@
             width: fit-content;
         }
 
-        .total-label { 
-            font-size: 1rem; 
-            font-weight: 600; 
-            color: #555; 
+        .total-label { font-size: 1rem; font-weight: 600; color: #555; }
+        .total-amount { font-size: 1.4rem; font-weight: 800; color: #111; }
+
+        .btn-reset {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: background 0.2s;
         }
-
-        .total-amount { 
-            font-size: 1.4rem; 
-            font-weight: 800; 
-            color: #111; 
-        }
-
-        /* Responsif untuk Layar Tablet dan HP */
-        @media (max-width: 500px) {
-            .layout-wrapper {
-                flex-direction: column;
-                align-items: center;
-                gap: 40px;
-            }
-            .side-content {
-                width: 50px;
-                max-width: 50px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .grid-container {
-                grid-template-columns: repeat(4, 75px);
-                gap: 8px;
-                padding: 12px;
-            }
-            .grid-item {
-                width: 75px;
-                height: 75px;
-            }
-            .week-number {
-                font-size: 1.3rem;
-            }
-            .main-title {
-                font-size: 1.8rem;
-            }
-        }
-                nav {
-  padding: 2px;
-  text-align: center;
-  font-family:arial;
-  border: #333;
-}
-
-nav a {
-  background-color:aqua ;
-  color: rgb(0, 0, 0);
-  padding: 8px 15px;
-  text-decoration: none;
-  border-radius: 5px;
-  margin: 3px;
-}
-nav a:hover {
-  color: rgb(255, 255, 255);
-}
-
+        .btn-reset:hover { background-color: #c0392b; }
     </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body>
-       <center> <nav>
-            <a href="home.html">Home</a>
-            <a href="index.html">Detail</a>
-            <a href="Galeri.html">Galeri</a>
-        </nav></center> 
-        <br>
-    <h1 class="main-title">WELCOME TO<br>ZAHWA AND HASBI'S JOURNEY <br>100K/Week</h1>
+
+    <h1 class="main-title">WELCOME TO<br>ZAHWA AND HASBI'S JOURNEY</h1>
 
     <div class="layout-wrapper">
         
@@ -234,23 +183,15 @@ nav a:hover {
         </div>
 
         <div class="center-content">
-            <div class="grid-container">
-                <script>
-                    for (let i = 1; i <= 21; i++) {
-                        document.write(`
-                            <div class="grid-item" onclick="toggleWeek(this)">
-                                <span class="week-label">Week</span>
-                                <span class="week-number">${i}</span>
-                            </div>
-                        `);
-                    }
-                </script>
-            </div>
+            <div class="grid-container" id="gridContainer">
+                </div>
 
             <div class="total-card">
                 <span class="total-label">Total Tabungan:</span>
                 <span class="total-amount" id="totalAmount">Rp 0</span>
             </div>
+
+            <button class="btn-reset" onclick="resetProgress()">Reset Semua Minggu</button>
         </div>
 
         <div class="side-content">
@@ -262,20 +203,80 @@ nav a:hover {
     </div>
 
     <script>
-        let totalTabungan = 0;
-        const totalDisplay = document.getElementById('totalAmount');
+        // =============================================================
+        // MASUKKAN CONFIG FIREBASE MILIK ANDA DI SINI
+        // =============================================================
+       const firebaseConfig = {
+               apiKey: "AIzaSyCWGvQ1CVbj1B14eE3nJYrqluJ-QVIOpTs",
+    authDomain: "nikaproject-fb7fe.firebaseapp.com",
+    databaseURL: "https://nikaproject-fb7fe-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "nikaproject-fb7fe",
+    storageBucket: "nikaproject-fb7fe.firebasestorage.app",
+    messagingSenderId: "1085097655469",
+    appId: "1:1085097655469:web:7eb07eb35f57a44e1e9a24",
+    measurementId: "G-1B69MD25J3"
+        };
 
-        function toggleWeek(element) {
-            if (element.classList.contains('checked')) {
-                element.classList.remove('checked');
-                totalTabungan -= 100000;
-            } else {
-                element.classList.add('checked');
-                totalTabungan += 100000;
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const weekRef = database.ref('progressWeek');
+
+        const totalPerWeek = 100000; // Nominal tabungan per minggu
+
+        // 1. Generate Kotak Week 1 sampai 21 di HTML
+        const gridContainer = document.getElementById('gridContainer');
+        for (let i = 1; i <= 21; i++) {
+            gridContainer.innerHTML += `
+                <div class="grid-item" id="week-${i}" onclick="checkWeek(${i})">
+                    <span class="week-label">Week</span>
+                    <span class="week-number">${i}</span>
+                </div>
+            `;
+        }
+
+        // 2. Ambil Data Realtime dari Firebase Cloud
+        weekRef.on('value', function(snapshot) {
+            const data = snapshot.val() || {};
+            let totalChecked = 0;
+
+            for (let i = 1; i <= 21; i++) {
+                const element = document.getElementById(`week-${i}`);
+                
+                // Jika di Firebase status week ini adalah true (sudah diklik)
+                if (data[`week_${i}`] === true) {
+                    element.classList.add('checked');
+                    totalChecked++;
+                } else {
+                    element.classList.remove('checked');
+                }
             }
 
-            // Update tampilan total tabungan di layar
-            totalDisplay.innerText = "Rp " + totalTabungan.toLocaleString('id-ID');
+            // Update nominal total tabungan di layar
+            const grandTotal = totalChecked * totalPerWeek;
+            document.getElementById('totalAmount').innerText = "Rp " + grandTotal.toLocaleString('id-ID');
+        });
+
+        // 3. Fungsi saat Kotak Week diklik oleh user
+        function checkWeek(weekNumber) {
+            const element = document.getElementById(`week-${weekNumber}`);
+            
+            // Mencegah klik ganda jika sudah checked
+            if (element.classList.contains('checked')) return;
+
+            // Update status ke Firebase (otomatis tersinkron ke semua perangkat)
+            weekRef.child(`week_${weekNumber}`).set(true);
+        }
+
+        // 4. Fungsi Reset Progress (Kembali ke awal)
+        function resetProgress() {
+            if (confirm("Apakah Anda yakin ingin mengulang dari Week 1 lagi?")) {
+                const resetData = {};
+                for (let i = 1; i <= 21; i++) {
+                    resetData[`week_${i}`] = false;
+                }
+                weekRef.set(resetData);
+            }
         }
     </script>
 
