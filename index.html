@@ -188,7 +188,7 @@ nav a:hover {
             <a href="Galeri.html">Galeri</a>
         </nav></center> 
         <br>
-    <div class="container">
+<div class="container">
         
         <div class="input-card">
             <h2>Tambah Catatan Baru</h2>
@@ -234,28 +234,29 @@ nav a:hover {
                     </tr>
                 </tfoot>
             </table>
+            
+            <button class="btn-danger" onclick="clearData()">Hapus Semua Riwayat</button>
         </div>
 
     </div>
 
     <script>
-        let rowNumber = 1;
-        let totalHasbiAll = 0;
-        let totalZahwaAll = 0;
-        let grandTotalAll = 0;
+        // Mengambil data lama yang tersimpan di browser saat web dibuka
+        let dataTabungan = JSON.parse(localStorage.getItem('dataTabungan')) || [];
+
+        // Menampilkan data yang sudah ada saat halaman selesai dimuat
+        document.addEventListener("DOMContentLoaded", function() {
+            renderTable();
+        });
 
         function addData(event) {
-            event.preventDefault(); // Mencegah reload halaman saat form disubmit
+            event.preventDefault();
 
-            // Ambil data dari input
             const tanggalInput = document.getElementById('tanggal').value;
             const hasbiInput = parseInt(document.getElementById('hasbi').value) || 0;
             const zahwaInput = parseInt(document.getElementById('zahwa').value) || 0;
-            
-            // Hitung total baris tersebut
-            const totalBaris = hasbiInput + zahwaInput;
 
-            // Format tanggal Indonesia sederhana (YYYY-MM-DD -> DD/MM/YYYY)
+            // Format tanggal Indonesia
             const dateObj = new Date(tanggalInput);
             const formattedDate = dateObj.toLocaleDateString('id-ID', {
                 day: 'numeric',
@@ -263,32 +264,63 @@ nav a:hover {
                 year: 'numeric'
             });
 
-            // Buat elemen baris baru untuk tabel
+            // Simpan data baru ke dalam objek array
+            const recordBaru = {
+                tanggal: formattedDate,
+                hasbi: hasbiInput,
+                zahwa: zahwaInput
+            };
+
+            dataTabungan.push(recordBaru);
+
+            // SIMPAN KE LOCALSTORAGE
+            localStorage.setItem('dataTabungan', JSON.stringify(dataTabungan));
+
+            // Perbarui tampilan tabel dan reset form
+            renderTable();
+            document.getElementById('savingForm').reset();
+        }
+
+        function renderTable() {
             const tableBody = document.getElementById('tableBody');
-            const newRow = document.createElement('tr');
+            tableBody.innerHTML = ""; // Bersihkan tabel sebelum dimuat ulang
 
-            newRow.innerHTML = `
-                <td style="text-align: center;">${rowNumber}</td>
-                <td>${formattedDate}</td>
-                <td>Rp ${hasbiInput.toLocaleString('id-ID')}</td>
-                <td>Rp ${zahwaInput.toLocaleString('id-ID')}</td>
-                <td><strong>Rp ${totalBaris.toLocaleString('id-ID')}</strong></td>
-            `;
+            let totalHasbiAll = 0;
+            let totalZahwaAll = 0;
+            let grandTotalAll = 0;
 
-            tableBody.appendChild(newRow);
+            // Mengisi baris tabel berdasarkan data yang ada
+            dataTabungan.forEach((item, index) => {
+                const totalBaris = item.hasbi + item.zahwa;
+                
+                totalHasbiAll += item.hasbi;
+                totalZahwaAll += item.zahwa;
+                grandTotalAll += totalBaris;
 
-            // Update nilai akumulasi di bagian bawah tabel
-            totalHasbiAll += hasbiInput;
-            totalZahwaAll += zahwaInput;
-            grandTotalAll += totalBaris;
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td style="text-align: center;">${index + 1}</td>
+                    <td>${item.tanggal}</td>
+                    <td>Rp ${item.hasbi.toLocaleString('id-ID')}</td>
+                    <td>Rp ${item.zahwa.toLocaleString('id-ID')}</td>
+                    <td><strong>Rp ${totalBaris.toLocaleString('id-ID')}</strong></td>
+                `;
+                tableBody.appendChild(newRow);
+            });
 
+            // Memperbarui teks total di tfoot
             document.getElementById('grandTotalHasbi').innerText = "Rp " + totalHasbiAll.toLocaleString('id-ID');
             document.getElementById('grandTotalZahwa').innerText = "Rp " + totalZahwaAll.toLocaleString('id-ID');
             document.getElementById('grandTotalAll').innerText = "Rp " + grandTotalAll.toLocaleString('id-ID');
+        }
 
-            // Reset form dan naikkan counter nomor baris
-            rowNumber++;
-            document.getElementById('savingForm').reset();
+        // Fungsi untuk mengosongkan riwayat memori
+        function clearData() {
+            if (confirm("Apakah Anda yakin ingin menghapus semua riwayat tabungan?")) {
+                localStorage.removeItem('dataTabungan');
+                dataTabungan = [];
+                renderTable();
+            }
         }
     </script>
 
