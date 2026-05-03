@@ -188,17 +188,12 @@ nav a:hover {
             <a href="Galeri.html">Galeri</a>
         </nav></center> 
         <br>
-    <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyCWGvQ1CVbj1B14eE3nJYrqluJ-QVIOpTs",
+    <script>
+        // =============================================================
+        // MASUKKAN CONFIG FIREBASE MILIK ANDA DI SINI
+        // =============================================================
+        const firebaseConfig = {
+               apiKey: "AIzaSyCWGvQ1CVbj1B14eE3nJYrqluJ-QVIOpTs",
     authDomain: "nikaproject-fb7fe.firebaseapp.com",
     databaseURL: "https://nikaproject-fb7fe-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "nikaproject-fb7fe",
@@ -206,12 +201,85 @@ nav a:hover {
     messagingSenderId: "1085097655469",
     appId: "1:1085097655469:web:7eb07eb35f57a44e1e9a24",
     measurementId: "G-1B69MD25J3"
-  };
+        };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const tabunganRef = database.ref('dataTabungan');
+
+        // 1. Ambil Data Realtime dari Firebase Cloud
+        tabunganRef.on('value', function(snapshot) {
+            const data = snapshot.val();
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = ""; 
+
+            let totalHasbiAll = 0;
+            let totalZahwaAll = 0;
+            let grandTotalAll = 0;
+            let index = 1;
+
+            if (data) {
+                for (let key in data) {
+                    let item = data[key];
+                    let totalBaris = item.hasbi + item.zahwa;
+
+                    totalHasbiAll += item.hasbi;
+                    totalZahwaAll += item.zahwa;
+                    grandTotalAll += totalBaris;
+
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `
+                        <td style="text-align: center;">${index}</td>
+                        <td>${item.tanggal}</td>
+                        <td>Rp ${item.hasbi.toLocaleString('id-ID')}</td>
+                        <td>Rp ${item.zahwa.toLocaleString('id-ID')}</td>
+                        <td><strong>Rp ${totalBaris.toLocaleString('id-ID')}</strong></td>
+                    `;
+                    tableBody.appendChild(newRow);
+                    index++;
+                }
+            }
+
+            // Update footer total
+            document.getElementById('grandTotalHasbi').innerText = "Rp " + totalHasbiAll.toLocaleString('id-ID');
+            document.getElementById('grandTotalZahwa').innerText = "Rp " + totalZahwaAll.toLocaleString('id-ID');
+            document.getElementById('grandTotalAll').innerText = "Rp " + grandTotalAll.toLocaleString('id-ID');
+        });
+
+        // 2. Simpan Data Baru ke Firebase Cloud
+        function addDataToFirebase(event) {
+            event.preventDefault();
+
+            const tanggalInput = document.getElementById('tanggal').value;
+            const hasbiInput = parseInt(document.getElementById('hasbi').value) || 0;
+            const zahwaInput = parseInt(document.getElementById('zahwa').value) || 0;
+
+            const dateObj = new Date(tanggalInput);
+            const formattedDate = dateObj.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            // Kirim ke database Firebase
+            tabunganRef.push({
+                tanggal: formattedDate,
+                hasbi: hasbiInput,
+                zahwa: zahwaInput
+            });
+
+            document.getElementById('savingForm').reset();
+        }
+
+        // 3. Hapus Data dari Firebase Cloud
+        function clearFirebaseData() {
+            if (confirm("Apakah Anda yakin ingin menghapus semua riwayat di database cloud?")) {
+                tabunganRef.remove();
+            }
+        }
+    </script>
+    
 <div class="container">
         
         <div class="input-card">
