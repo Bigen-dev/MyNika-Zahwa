@@ -330,6 +330,8 @@ nav a:hover {
     transform: scale(1.15) rotate(90deg); /* Animasi berputar estetik saat di-hover */
 }
     </style>
+      <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body>
        <center> <nav>
@@ -417,6 +419,20 @@ nav a:hover {
     </div>
 <input type="file" id="imageInput" accept="image/*" style="display: none;">
     <script>
+             // =============================================================
+        // MASUKKAN CONFIG FIREBASE MILIK ANDA DI SINI
+        // =============================================================
+       const firebaseConfig = {
+               apiKey: "AIzaSyCWGvQ1CVbj1B14eE3nJYrqluJ-QVIOpTs",
+    authDomain: "nikaproject-fb7fe.firebaseapp.com",
+    databaseURL: "https://nikaproject-fb7fe-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "nikaproject-fb7fe",
+    storageBucket: "nikaproject-fb7fe.firebasestorage.app",
+    messagingSenderId: "1085097655469",
+    appId: "1:1085097655469:web:7eb07eb35f57a44e1e9a24",
+    measurementId: "G-1B69MD25J3"
+        };
+
         const modal = document.getElementById("imageModal");
         const modalImg = document.getElementById("fullImage");
 
