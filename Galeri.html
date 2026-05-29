@@ -223,122 +223,8 @@ nav a {
 nav a:hover {
   color: rgb(255, 255, 255);
 }
-.add-photo-card {
-    
-    background: rgba(255, 255, 255, 0.6);
-    border: 3px dashed #9434db;
-    box-shadow: none;
-}
 
-.add-photo-inner {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: transparent;
-    color: #9434db;
-    transition: all 0.3s ease;
-}
-
-/* Desain Ikon Plus */
-.plus-icon {
-    font-size: 3rem;
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 5px;
-    transition: transform 0.3s ease;
-}
-
-/* Desain Teks di Bawah Plus */
-.plus-text {
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Efek Hover yang Selaras dengan Galeri */
-.add-photo-card:hover {
-    background: #ffffff;
-    border-color: #ff58f7;
-    box-shadow: 0 15px 35px rgba(148, 52, 219, 0.2) !important;
-}
-
-.add-photo-card:hover .add-photo-inner {
-    color: #ff58f7;
-}
-
-.add-photo-card:hover .plus-icon {
-    transform: scale(1.15) rotate(90deg); /* Animasi berputar estetik saat di-hover */
-}
-/* Gaya Khusus Kartu Tambah Foto */
-.add-photo-card {
-    background-color: rgba(255, 255, 255, 0.6);
-    border: 3px dashed #9434db;
-    box-shadow: none;
-    box-sizing: border-box;
-}
-
-/* Memanfaatkan Posisi Absolut Bawaan Image-Card-Inner */
-.add-photo-inner {
-    background: transparent;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #9434db;
-    transition: all 0.3s ease;
-}
-
-/* Pembungkus Konten di Tengah */
-.center-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-/* Desain Ikon Plus */
-.plus-icon {
-    font-size: 3.5rem;
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 5px;
-    transition: transform 0.3s ease;
-}
-
-/* Desain Teks di Bawah Plus */
-.plus-text {
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Efek Hover yang Selaras Sempurna dengan Galeri */
-.add-photo-card:hover {
-    background-color: #ffffff;
-    border-color: #ff58f7;
-    box-shadow: 0 15px 35px rgba(148, 52, 219, 0.2) !important;
-}
-
-.add-photo-card:hover .add-photo-inner {
-    color: #ff58f7;
-}
-
-.add-photo-card:hover .plus-icon {
-    transform: scale(1.15) rotate(90deg); /* Animasi berputar estetik saat di-hover */
-}
-
-         /* Sesuai dengan CSS (.gallery-container, .image-card, dll) yang Anda miliki sebelumnya */
-        .gallery-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .image-card { background-color: white; border-radius: 20px; position: relative; width: 100%; padding-top: 100%; cursor: pointer; }
-        .image-card-inner { position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; overflow: hidden; border-radius: 15px; }
-        .image-card-inner img { width: 100%; height: 100%; object-fit: cover; }
-        .add-photo-card { border: 3px dashed #9434db; display: flex; justify-content: center; align-items: center; text-align: center; }
-        /* Style modal, dll */
     </style>
-    
 </head>
 <body>
        <center> <nav>
@@ -405,41 +291,14 @@ nav a:hover {
              <img src="img/10.jpg" alt="Gambar 1">
             </div>
         </div>
+        </div>
 
     <div id="imageModal" class="modal">
         <span class="close-button" onclick="closeModal()">&times;</span>
         <img class="modal-content" id="fullImage">
     </div>
- <div class="image-card add-photo-card" onclick="document.getElementById('imageInput').click()">
-    <div class="image-card-inner add-photo-inner">
-        <div class="center-content">
-            <span class="plus-icon">&plus;</span>
-            <span class="plus-text">Tambah Foto</span>
-    </div>
-</div>
-        </div>
-         </div>
 
-   <div id="imageModal" class="modal">
-        <span class="close-button" onclick="closeModal()">&times;</span>
-        <img class="modal-content" id="fullImage">
-    </div>
-     <div class="gallery-container" id="galleryContainer">
-        <!-- Kartu Tombol Tambah Foto (+) -->
-        <div class="image-card add-photo-card" onclick="document.getElementById('imageInput').click()">
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                <span style="font-size: 3rem; font-weight: bold; color: #9434db;">+</span>
-                <p style="margin:0; font-weight:600; color: #9434db;">TAMBAH FOTO</p>
-            </div>
-        </div>
-        <!-- Input File Tersembunyi -->
-        <input type="file" id="imageInput" accept="image/*" style="display: none;">
-    </div>
-
-
-<input type="file" id="imageInput" accept="image/*" style="display: none;">
     <script>
-   
         const modal = document.getElementById("imageModal");
         const modalImg = document.getElementById("fullImage");
 
@@ -467,142 +326,6 @@ nav a:hover {
                 closeModal();
             }
         });
-        const imageInput = document.getElementById("imageInput");
-const galleryContainer = document.querySelector(".gallery-container");
-
-// Mendengarkan perubahan ketika user selesai memilih file foto
-imageInput.addEventListener('change', function() {
-    // Memastikan ada file yang dipilih
-    if (this.files && this.files[0]) {
-        const file = this.files[0];
-        const reader = new FileReader();
-        
-        // Proses membaca file gambar lokal menjadi URL Base64
-        reader.onload = function(event) {
-            const imageUrl = event.target.result;
-
-            // 1. Membuat struktur elemen kartu gambar baru
-            const newCard = document.createElement('div');
-            newCard.className = 'image-card';
-            
-            // 2. Memasang fungsi klik agar gambar baru bisa dibuka di modal
-            newCard.setAttribute('onclick', `openModal('${imageUrl}')`);
-
-            // 3. Menyusun konten bagian dalam kartu gambar
-            newCard.innerHTML = `
-                <div class="image-card-inner">
-                    <img src="${imageUrl}" alt="Gambar Unggahan">
-                </div>
-            `;
-
-            // 4. Memasukkan gambar baru tepat setelah kartu tombol "+" (posisi kedua)
-            // galleryContainer.children[0] adalah kartu tombol "+" itu sendiri
-            if (galleryContainer.children.length > 0) {
-                galleryContainer.insertBefore(newCard, galleryContainer.children[0]);
-            } else {
-                galleryContainer.appendChild(newCard);
-            }
-
-            // 5. Reset nilai input file agar bisa mengunggah foto yang sama berturut-turut
-            imageInput.value = '';
-        };
-
-        reader.readAsDataURL(file);
-    }
-});
-<!-- Firebase SDK menggunakan tipe ES Module -->
-    <script type="module">
-        // Import library Firebase yang dibutuhkan
-        import { initializeApp } from "https://gstatic.com";
-        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://gstatic.com";
-        import { getDatabase, ref as dbRef, push, set, onChildAdded } from "https://gstatic.com";
-
-        // 1. Ganti konfigurasi di bawah ini dengan milik akun Firebase Anda!
-        const firebaseConfig = {
-            apiKey: "AIzaSy...",
-            authDomain: "://firebaseapp.com",
-            databaseURL: "https://firebaseio.com",
-            projectId: "proyek-kamu",
-            storageBucket: "://appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:12345:web:abcdef"
-        };
-
-        // Inisialisasi Firebase
-        const app = initializeApp(firebaseConfig);
-        const storage = getStorage(app);
-        const database = getDatabase(app);
-
-        const imageInput = document.getElementById("imageInput");
-        const galleryContainer = document.getElementById("galleryContainer");
-
-        // ==========================================
-        // PROSES 1: UNGGUH GAMBAR BARU KE FIREBASE
-        // ==========================================
-        imageInput.addEventListener('change', async function() {
-            if (this.files && this.files[0]) {
-                const file = this.files[0];
-                
-                // Buat nama file unik berdasarkan timestamp agar tidak tumpang tindih
-                const fileName = Date.now() + "_" + file.name;
-                const fileStorageRef = storageRef(storage, 'galeri/' + fileName);
-
-                try {
-                    alert("Sedang mengunggah... Mohon tunggu.");
-                    // 1. Upload file gambar asli ke Firebase Storage
-                    const snapshot = await uploadBytes(fileStorageRef, file);
-                    
-                    // 2. Ambil URL publik gambar dari Storage
-                    const downloadUrl = await getDownloadURL(snapshot.ref);
-
-                    // 3. Simpan URL tersebut ke Realtime Database agar tersinkronisasi ke semua perangkat [1]
-                    const imagesDbRef = dbRef(database, 'photos');
-                    const newPhotoRef = push(imagesDbRef);
-                    await set(newPhotoRef, {
-                        url: downloadUrl,
-                        timestamp: Date.now()
-                    });
-
-                    alert("Gambar berhasil terunggah ke semua perangkat!");
-                } catch (error) {
-                    console.error("Gagal mengunggah:", error);
-                    alert("Terjadi kesalahan saat mengunggah.");
-                }
-
-                // Reset input file
-                imageInput.value = '';
-            }
-        });
-
-        // ==========================================
-        // PROSES 2: SINKRONISASI REAL-TIME KE LAYAR [2]
-        // ==========================================
-        // Fungsi ini otomatis berjalan di semua perangkat jika ada data baru masuk ke database 'photos' [2]
-        const imagesDbRef = dbRef(database, 'photos');
-        onChildAdded(imagesDbRef, (snapshot) => {
-            const data = snapshot.val();
-            const imageUrl = data.url;
-
-            // Membuat element card gambar baru
-            const newCard = document.createElement('div');
-            newCard.className = 'image-card';
-            // Hubungkan fungsi openModal Anda jika ada
-            newCard.setAttribute('onclick', `openModal('${imageUrl}')`); 
-
-            newCard.innerHTML = `
-                <div class="image-card-inner">
-                    <img src="${imageUrl}" alt="Gambar Firebase">
-                </div>
-            `;
-
-            // Menyisipkan gambar baru tepat setelah kartu tombol "+" (posisi kedua)
-            if (galleryContainer.children.length > 2) {
-                galleryContainer.insertBefore(newCard, galleryContainer.children[1]);
-            } else {
-                galleryContainer.appendChild(newCard);
-            }
-        });
-    </script>
     </script>
 
 </body>
