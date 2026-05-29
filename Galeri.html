@@ -330,8 +330,7 @@ nav a:hover {
     transform: scale(1.15) rotate(90deg); /* Animasi berputar estetik saat di-hover */
 }
     </style>
-      <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    
 </head>
 <body>
        <center> <nav>
@@ -419,20 +418,7 @@ nav a:hover {
     </div>
 <input type="file" id="imageInput" accept="image/*" style="display: none;">
     <script>
-             // =============================================================
-        // MASUKKAN CONFIG FIREBASE MILIK ANDA DI SINI
-        // =============================================================
-       const firebaseConfig = {
-               apiKey: "AIzaSyCWGvQ1CVbj1B14eE3nJYrqluJ-QVIOpTs",
-    authDomain: "nikaproject-fb7fe.firebaseapp.com",
-    databaseURL: "https://nikaproject-fb7fe-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "nikaproject-fb7fe",
-    storageBucket: "nikaproject-fb7fe.firebasestorage.app",
-    messagingSenderId: "1085097655469",
-    appId: "1:1085097655469:web:7eb07eb35f57a44e1e9a24",
-    measurementId: "G-1B69MD25J3"
-        };
-
+   
         const modal = document.getElementById("imageModal");
         const modalImg = document.getElementById("fullImage");
 
@@ -503,7 +489,99 @@ imageInput.addEventListener('change', function() {
         reader.readAsDataURL(file);
     }
 });
+<!-- Firebase SDK menggunakan tipe ES Module -->
+    <script type="module">
+        // Import library Firebase yang dibutuhkan
+        import { initializeApp } from "https://gstatic.com";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://gstatic.com";
+        import { getDatabase, ref as dbRef, push, set, onChildAdded } from "https://gstatic.com";
 
+        // 1. Ganti konfigurasi di bawah ini dengan milik akun Firebase Anda!
+        const firebaseConfig = {
+            apiKey: "AIzaSy...",
+            authDomain: "://firebaseapp.com",
+            databaseURL: "https://firebaseio.com",
+            projectId: "proyek-kamu",
+            storageBucket: "://appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:12345:web:abcdef"
+        };
+
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+        const database = getDatabase(app);
+
+        const imageInput = document.getElementById("imageInput");
+        const galleryContainer = document.getElementById("galleryContainer");
+
+        // ==========================================
+        // PROSES 1: UNGGUH GAMBAR BARU KE FIREBASE
+        // ==========================================
+        imageInput.addEventListener('change', async function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                
+                // Buat nama file unik berdasarkan timestamp agar tidak tumpang tindih
+                const fileName = Date.now() + "_" + file.name;
+                const fileStorageRef = storageRef(storage, 'galeri/' + fileName);
+
+                try {
+                    alert("Sedang mengunggah... Mohon tunggu.");
+                    // 1. Upload file gambar asli ke Firebase Storage
+                    const snapshot = await uploadBytes(fileStorageRef, file);
+                    
+                    // 2. Ambil URL publik gambar dari Storage
+                    const downloadUrl = await getDownloadURL(snapshot.ref);
+
+                    // 3. Simpan URL tersebut ke Realtime Database agar tersinkronisasi ke semua perangkat [1]
+                    const imagesDbRef = dbRef(database, 'photos');
+                    const newPhotoRef = push(imagesDbRef);
+                    await set(newPhotoRef, {
+                        url: downloadUrl,
+                        timestamp: Date.now()
+                    });
+
+                    alert("Gambar berhasil terunggah ke semua perangkat!");
+                } catch (error) {
+                    console.error("Gagal mengunggah:", error);
+                    alert("Terjadi kesalahan saat mengunggah.");
+                }
+
+                // Reset input file
+                imageInput.value = '';
+            }
+        });
+
+        // ==========================================
+        // PROSES 2: SINKRONISASI REAL-TIME KE LAYAR [2]
+        // ==========================================
+        // Fungsi ini otomatis berjalan di semua perangkat jika ada data baru masuk ke database 'photos' [2]
+        const imagesDbRef = dbRef(database, 'photos');
+        onChildAdded(imagesDbRef, (snapshot) => {
+            const data = snapshot.val();
+            const imageUrl = data.url;
+
+            // Membuat element card gambar baru
+            const newCard = document.createElement('div');
+            newCard.className = 'image-card';
+            // Hubungkan fungsi openModal Anda jika ada
+            newCard.setAttribute('onclick', `openModal('${imageUrl}')`); 
+
+            newCard.innerHTML = `
+                <div class="image-card-inner">
+                    <img src="${imageUrl}" alt="Gambar Firebase">
+                </div>
+            `;
+
+            // Menyisipkan gambar baru tepat setelah kartu tombol "+" (posisi kedua)
+            if (galleryContainer.children.length > 2) {
+                galleryContainer.insertBefore(newCard, galleryContainer.children[1]);
+            } else {
+                galleryContainer.appendChild(newCard);
+            }
+        });
+    </script>
     </script>
 
 </body>
