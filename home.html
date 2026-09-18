@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Tabungan & Pengeluaran</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    
+    <style>
+        /* Tombol Sakelar Jenis Transaksi */
+        .transaction-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-tab {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #e91e63;
+            background-color: #fff;
+            color: #e91e63;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-tab.active {
+            background-color: #e91e63;
+            color: white;
+        }
+
+        /* Layout Form Menjajar Horizontal */
+        .form-row-horizontal {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .form-row-horizontal .form-group {
+            flex: 1;
+            min-width: 150px;
+            margin-bottom: 0;
+        }
+
+        .btn-submit-container {
+            flex: 0 0 auto;
+        }
+
+        /* Warna Latar Belakang Baris Tabel */
+        .row-pemasukan {
+            background-color: #e8f5e9 !important; /* Hijau Muda */
+        }
+
+        .row-pengeluaran {
+            background-color: #ffebee !important; /* Merah Muda */
+        }
+
+        .row-pemasukan:hover {
+            background-color: #c8e6c9 !important;
+        }
+
+        .row-pengeluaran:hover {
+            background-color: #ffcdd2 !important;
+        }
+
+        /* Tombol Hapus per Baris */
+        .btn-delete-row {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+/* Menjaga kontainer tabel agar tidak meluap keluar card */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto; /* Tambahkan scrollbar horizontal jika layar sempit */
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+}
+
+/* Pengaturan ukuran tabel */
+.table-card table {
+    width: 100%;
+    min-width: 750px; /* Lebar minimal agar isi tabel tidak berdempetan */
+    border-collapse: collapse;
+    table-layout: fixed; /* Membagi lebar kolom secara proporsional */
+}
+
+/* Pengaturan sel tabel (Header dan Isi) */
+.table-card th, 
+.table-card td {
+    padding: 10px 8px;
+    font-size: 13px;
+    word-wrap: break-word; /* Memotong kata panjang agar masuk ke baris baru */
+    overflow-wrap: break-word;
+    text-align: left;
+}
+
+/* Penyesuaian Lebar Kolom Secara Spesifik */
+.table-card th:nth-child(1), .table-card td:nth-child(1) { width: 35px; text-align: center; } /* No */
+.table-card th:nth-child(2), .table-card td:nth-child(2) { width: 110px; } /* Tanggal */
+.table-card th:nth-child(3), .table-card td:nth-child(3) { width: 85px; }  /* Jenis */
+.table-card th:nth-child(4), .table-card td:nth-child(4) { width: 90px; }  /* Hasbi */
+.table-card th:nth-child(5), .table-card td:nth-child(5) { width: 90px; }  /* Zahwa */
+.table-card th:nth-child(6), .table-card td:nth-child(6) { width: 95px; }  /* Pengeluaran */
+.table-card th:nth-child(7), .table-card td:nth-child(7) { width: 100px; } /* Total Tabungan */
+.table-card th:nth-child(8), .table-card td:nth-child(8) { width: 120px; } /* Catatan */
+.table-card th:nth-child(9), .table-card td:nth-child(9) { width: 70px; text-align: center; } /* Aksi */
+        .btn-delete-row:hover {
+            background-color: #cc0000;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="home.html">Detail</a>
+        <a href="Galeri.html">Galeri</a>
+    </nav>
+
+    <div class="container">
+        
+        <div class="input-card">
+            <h2>TAMBAH CATATAN TRANSAKSI</h2>
+
+            <!-- Tombol Pengalih Jenis Transaksi -->
+            <div class="transaction-toggle">
+                <button type="button" id="btnTabung" class="btn-tab active" onclick="switchTransactionType('pemasukan')">Tabungan</button>
+                <button type="button" id="btnKeluar" class="btn-tab" onclick="switchTransactionType('pengeluaran')">Pengeluaran</button>
+            </div>
+
+            <form id="savingForm" onsubmit="addDataToFirebase(event)">
+                
+                <!-- Form Input Tabungan (Rata Menyamping: Tanggal, Hasbi, Zahwa, Button) -->
+                <div id="formTabungan" class="form-row-horizontal">
+                    <div class="form-group">
+                        <label for="tanggalTabung">Tanggal</label>
+                        <input type="date" id="tanggalTabung" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="hasbi">Tabungan Hasbi (Rp)</label>
+                        <input type="number" id="hasbi" placeholder="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="zahwa">Tabungan Zahwa (Rp)</label>
+                        <input type="number" id="zahwa" placeholder="0" value="0">
+                    </div>
+                    <div class="form-group btn-submit-container">
+                        <button type="submit">Tambah Catatan</button>
+                    </div>
+                </div>
+
+                <!-- Form Input Pengeluaran (Rata Menyamping: Tanggal, Total, Catatan, Button) -->
+                <div id="formPengeluaran" class="form-row-horizontal" style="display: none;">
+                    <div class="form-group">
+                        <label for="tanggalKeluar">Tanggal</label>
+                        <input type="date" id="tanggalKeluar">
+                    </div>
+                    <div class="form-group">
+                        <label for="pengeluaran">Total Pengeluaran (Rp)</label>
+                        <input type="number" id="pengeluaran" placeholder="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="keterangan">Catatan</label>
+                        <input type="text" id="keterangan" placeholder="Keterangan pengeluaran...">
+                    </div>
+                    <div class="form-group btn-submit-container">
+                        <button type="submit">Tambah Catatan</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="table-card">
+            <h2>RIWAYAT TRANSAKSI</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="text-align: center; width: 40px;">No</th>
+                            <th>Tanggal</th>
+                            <th>Jenis</th>
+                            <th>Hasbi</th>
+                            <th>Zahwa</th>
+                            <th>Pengeluaran</th>
+                            <th>Total Tabungan</th>
+                            <th>Catatan</th>
+                            <th style="text-align: center; width: 80px;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                    <tfoot>
+                        <!-- Baris Total Per Kolom -->
+                        <tr class="row-total">
+                            <td colspan="3" style="text-align: right;"><strong>Total Per Kolom:</strong></td>
+                            <td id="grandTotalHasbi">Rp 0</td>
+                            <td id="grandTotalZahwa">Rp 0</td>
+                            <td id="grandTotalPengeluaran" style="color: #c62828;">Rp 0</td>
+                            <td id="grandTotalTabungan" style="color: #2e7d32;">Rp 0</td>
+                            <td style="text-align: center;">-</td>
+                            <td></td>
+                        </tr>
+                        <!-- Baris Saldo Akhir -->
+                        <tr class="row-total" style="background-color: #f0f0f0;">
+                            <td colspan="6" style="text-align: right;"><strong>Sisa Saldo Bersih (Tabungan - Pengeluaran):</strong></td>
+                            <td id="grandTotalSaldo" colspan="2" style="font-size: 15px; font-weight: bold;">Rp 0</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <button class="btn-danger" onclick="clearFirebaseData()" style="margin-top: 15px;">Hapus Semua Riwayat</button>
+        </div>
+
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWGvQ1CVbj1B14eE3nJYrqluJ-QVIOpTs",
+            authDomain: "nikaproject-fb7fe.firebaseapp.com",
+            databaseURL: "https://nikaproject-fb7fe-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "nikaproject-fb7fe",
+            storageBucket: "nikaproject-fb7fe.firebasestorage.app",
+            messagingSenderId: "1085097655469",
+            appId: "1:1085097655469:web:7eb07eb35f57a44e1e9a24",
+            measurementId: "G-1B69MD25J3"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const tabunganRef = database.ref('dataTabungan');
+
+        let activeType = 'pemasukan';
+
+        function switchTransactionType(type) {
+            activeType = type;
+            const btnTabung = document.getElementById('btnTabung');
+            const btnKeluar = document.getElementById('btnKeluar');
+            const formTabungan = document.getElementById('formTabungan');
+            const formPengeluaran = document.getElementById('formPengeluaran');
+
+            const tTabung = document.getElementById('tanggalTabung');
+            const tKeluar = document.getElementById('tanggalKeluar');
+
+            if (type === 'pemasukan') {
+                btnTabung.classList.add('active');
+                btnKeluar.classList.remove('active');
+                formTabungan.style.display = 'flex';
+                formPengeluaran.style.display = 'none';
+
+                tTabung.required = true;
+                tKeluar.required = false;
+            } else {
+                btnKeluar.classList.add('active');
+                btnTabung.classList.remove('active');
+                formTabungan.style.display = 'none';
+                formPengeluaran.style.display = 'flex';
+
+                tKeluar.required = true;
+                tTabung.required = false;
+            }
+        }
+
+        tabunganRef.on('value', function(snapshot) {
+            const data = snapshot.val();
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = ""; 
+
+            let totalHasbiAll = 0;
+            let totalZahwaAll = 0;
+            let totalPengeluaranAll = 0;
+            let totalTabunganAll = 0;
+            let index = 1;
+
+            if (data) {
+                for (let key in data) {
+                    let item = data[key];
+                    let hasbi = item.hasbi || 0;
+                    let zahwa = item.zahwa || 0;
+                    let pengeluaran = item.pengeluaran || 0;
+                    let jenis = item.jenis || (pengeluaran > 0 ? 'pengeluaran' : 'pemasukan');
+                    let catatan = item.keterangan || '-';
+                    
+                    let isPengeluaran = (jenis === 'pengeluaran' || pengeluaran > 0);
+                    let tabunganBaris = hasbi + zahwa;
+
+                    let teksPengeluaran = "-";
+                    let teksTabungan = "-";
+
+                    if (isPengeluaran) {
+                        totalPengeluaranAll += pengeluaran;
+                        teksPengeluaran = `<span style="color: #c62828;"><strong>-Rp ${pengeluaran.toLocaleString('id-ID')}</strong></span>`;
+                    } else {
+                        totalHasbiAll += hasbi;
+                        totalZahwaAll += zahwa;
+                        totalTabunganAll += tabunganBaris;
+                        teksTabungan = `<span style="color: #2e7d32;"><strong>+Rp ${tabunganBaris.toLocaleString('id-ID')}</strong></span>`;
+                    }
+
+                    const newRow = document.createElement('tr');
+                    newRow.classList.add(isPengeluaran ? 'row-pengeluaran' : 'row-pemasukan');
+
+                    newRow.innerHTML = `
+                        <td style="text-align: center;">${index}</td>
+                        <td>${item.tanggal}</td>
+                        <td>${isPengeluaran ? 'Pengeluaran' : 'Tabungan'}</td>
+                        <td>Rp ${hasbi.toLocaleString('id-ID')}</td>
+                        <td>Rp ${zahwa.toLocaleString('id-ID')}</td>
+                        <td>${teksPengeluaran}</td>
+                        <td>${teksTabungan}</td>
+                        <td>${catatan}</td>
+                        <td style="text-align: center;">
+                            <button class="btn-delete-row" onclick="deleteRow('${key}')">Hapus</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(newRow);
+                    index++;
+                }
+            }
+
+            let saldoBersih = totalTabunganAll - totalPengeluaranAll;
+
+            document.getElementById('grandTotalHasbi').innerText = "Rp " + totalHasbiAll.toLocaleString('id-ID');
+            document.getElementById('grandTotalZahwa').innerText = "Rp " + totalZahwaAll.toLocaleString('id-ID');
+            document.getElementById('grandTotalPengeluaran').innerText = "Rp " + totalPengeluaranAll.toLocaleString('id-ID');
+            document.getElementById('grandTotalTabungan').innerText = "Rp " + totalTabunganAll.toLocaleString('id-ID');
+            
+            let saldoFormatted = saldoBersih >= 0 
+                ? "Rp " + saldoBersih.toLocaleString('id-ID') 
+                : "-Rp " + Math.abs(saldoBersih).toLocaleString('id-ID');
+
+            document.getElementById('grandTotalSaldo').innerText = saldoFormatted;
+        });
+
+        function addDataToFirebase(event) {
+            event.preventDefault();
+
+            let tanggalInput = (activeType === 'pemasukan') 
+                ? document.getElementById('tanggalTabung').value 
+                : document.getElementById('tanggalKeluar').value;
+
+            if (!tanggalInput) return;
+
+            const dateObj = new Date(tanggalInput);
+            const formattedDate = dateObj.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            if (activeType === 'pemasukan') {
+                const hasbiInput = parseInt(document.getElementById('hasbi').value) || 0;
+                const zahwaInput = parseInt(document.getElementById('zahwa').value) || 0;
+
+                tabunganRef.push({
+                    jenis: 'pemasukan',
+                    tanggal: formattedDate,
+                    hasbi: hasbiInput,
+                    zahwa: zahwaInput,
+                    pengeluaran: 0,
+                    keterangan: '-'
+                });
+            } else {
+                const pengeluaranInput = parseInt(document.getElementById('pengeluaran').value) || 0;
+                const keteranganInput = document.getElementById('keterangan').value || '-';
+
+                tabunganRef.push({
+                    jenis: 'pengeluaran',
+                    tanggal: formattedDate,
+                    hasbi: 0,
+                    zahwa: 0,
+                    pengeluaran: pengeluaranInput,
+                    keterangan: keteranganInput
+                });
+            }
+
+            document.getElementById('savingForm').reset();
+            switchTransactionType(activeType);
+        }
+
+        function deleteRow(key) {
+            if (confirm("Apakah Anda yakin ingin menghapus catatan ini?")) {
+                database.ref('dataTabungan/' + key).remove();
+            }
+        }
+
+        function clearFirebaseData() {
+            if (confirm("Apakah Anda yakin ingin menghapus semua riwayat di database cloud?")) {
+                tabunganRef.remove();
+            }
+        }
+    </script>
+
+</body>
+</html>

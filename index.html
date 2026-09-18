@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zahwa and Hasbi's Journey</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="home.html">Detail</a>
+        <a href="Galeri.html">Galeri</a>
+    </nav>
+
+    <h1 class="main-title">WELCOME TO<br>ZAHWA AND HASBI'S JOURNEY</h1>
+
+    <div class="layout-wrapper">
+        
+        <div class="side-content">
+            <div class="image-card">
+                <img src="img/SAVE_20260503_113020.jpg" alt="Zahwa and Hasbi">
+            </div>
+        </div>
+
+        <div class="center-content">
+            <div class="grid-container" id="gridContainer"></div>
+
+            <div class="total-card">
+                <span class="total-label">Total Tabungan:</span>
+                <span class="total-amount" id="totalAmount">Rp 0</span>
+            </div>
+            
+       
+
+            <button class="btn-reset" onclick="resetProgress()">Reset Semua Minggu</button>
+        </div>
+         <div class="side-content">
+            <div class="image-card">
+                <img src="img/SAVE_20260503_113020.jpg" alt="Zahwa and Hasbi">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWGvQ1CVbj1B14eE3nJYrqluJ-QVIOpTs",
+            authDomain: "nikaproject-fb7fe.firebaseapp.com",
+            databaseURL: "https://nikaproject-fb7fe-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "nikaproject-fb7fe",
+            storageBucket: "nikaproject-fb7fe.firebasestorage.app",
+            messagingSenderId: "1085097655469",
+            appId: "1:1085097655469:web:7eb07eb35f57a44e1e9a24",
+            measurementId: "G-1B69MD25J3"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const weekRef = database.ref('progressWeek');
+
+        const totalPerWeek = 100000;
+
+        const gridContainer = document.getElementById('gridContainer');
+        for (let i = 1; i <= 21; i++) {
+            gridContainer.innerHTML += `
+                <div class="grid-item" id="week-${i}" onclick="checkWeek(${i})">
+                    <span class="week-label">Week</span>
+                    <span class="week-number">${i}</span>
+                </div>
+            `;
+        }
+
+        weekRef.on('value', function(snapshot) {
+            const data = snapshot.val() || {};
+            let totalChecked = 0;
+
+            for (let i = 1; i <= 21; i++) {
+                const element = document.getElementById(`week-${i}`);
+                if (data[`week_${i}`] === true) {
+                    element.classList.add('checked');
+                    totalChecked++;
+                } else {
+                    element.classList.remove('checked');
+                }
+            }
+
+            const grandTotal = totalChecked * totalPerWeek;
+            document.getElementById('totalAmount').innerText = "Rp " + grandTotal.toLocaleString('id-ID');
+        });
+
+        function checkWeek(weekNumber) {
+            const element = document.getElementById(`week-${weekNumber}`);
+            if (element.classList.contains('checked')) return;
+            weekRef.child(`week_${weekNumber}`).set(true);
+        }
+
+        function resetProgress() {
+            if (confirm("Apakah Anda yakin ingin mengulang dari Week 1 lagi?")) {
+                const resetData = {};
+                for (let i = 1; i <= 21; i++) {
+                    resetData[`week_${i}`] = false;
+                }
+                weekRef.set(resetData);
+            }
+        }
+    </script>
+
+</body>
+</html>
